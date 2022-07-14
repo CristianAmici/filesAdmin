@@ -14,9 +14,6 @@ $r = new Router();
 
 $r->addRoute("login", "GET", "FileControlador", "login");
 $r->addRoute("fileForm", "GET", "FileControlador", "getFileForm");
-$r->addRoute("editMenu/:ID", "GET", "FileControlador", "editMenu");
-$r->addRoute("editUser", "POST", "FileControlador", "editUser");
-$r->addRoute("deleteUser/:ID", "GET", "FileControlador", "deleteUser"); 
 $r->addRoute("verifyUser", "POST", "FileControlador", "verifyUser");
 $r->addRoute("logout", "GET", "FileControlador", "logout");
 $r->addRoute("insertFile", "POST","FileControlador", "insertFile");

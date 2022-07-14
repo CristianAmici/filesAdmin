@@ -21,6 +21,7 @@ class FileView
 
     public function showFileForm($msj=null)
     {
+        $this->msj =$msj;
         $this->template = $this->getContentTemplate("fileForm");
         echo $this->template;
     }

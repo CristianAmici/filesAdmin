@@ -30,26 +30,31 @@ class FileControlador
     {
         $users = $this->model->getUsers();
         session_start();
-        if (!empty($_SESSION['nombre_usuario'])) {
+        if (!empty($_SESSION['name_user'])) {
 
-           if (empty($_POST['create_name'])) {
-
-                $this->view->showFileForm("Ingrese un nombre", $users);
+            if (
+                empty($_FILES['newFile']['name'])
+                && empty($_FILES['newFile']['tmp_name'])
+            ) {
+                $this->view->showFileForm("Ingrese un archivo");
             } else {
-                if ($this->model->getUserByName($_POST['create_name'])) {
 
-                    $this->view->showFileForm("El nombre de usuario ya existe", $users);
-                }else {
+                if (!is_uploaded_file($_FILES['newFile']['tmp_name'])) {
+                    $this->view->showFileForm("El archivo no fue procesado correctamente");
+                } else {
 
-                    $hash = password_hash($_POST['create_password'], PASSWORD_DEFAULT);
-                    $user = $_POST["create_name"];
-                    $userFromDB = $this->model->getUserByName($user);
-                    if ($userFromDB) {
-                        $this->view->showFileForm("La cuenta ya existe", $users);
+                    $source = $_FILES['newFile']['tmp_name'];
+                    $destination = 'C:\xampp\tomcat\webapps'.$_FILES['newFile']['name'];
+                    if (is_file($destination)) {
+                        @unlink(ini_get('upload_tmp_dir').$_FILES['newFile']['tmp_name']);
+                        $this->view->showFileForm("El archivo ya existe");
                     } else {
-                        $this->model->createUser($_POST['create_name'],$hash ,$_POST['admin'], $_POST['geoserver']);
-                        $users = $this->model->getUsers();
-                        $this->view->showFileForm("Cargado exitosamente", $users);
+                        if(!@move_uploaded_file($source,$destination)){
+                            @unlink(ini_get('upload_tmp_dir').$_FILES['newFile']['tmp_name']);
+                            $this->view->showFileForm("no se pudo mover el archivo");
+                        } else {
+                            $this->view->showFileForm("Cargado exitosamente");
+                        }
                     }
                 }
             }
@@ -67,7 +72,7 @@ class FileControlador
                 // Existe el usuario
 
 
-                if ($pass=="123456") {
+                if ($pass == "123456") {
 
                     session_start();
                     $_SESSION['name_user'] = $userFromDB->name_user;
@@ -97,8 +102,8 @@ class FileControlador
 
     function getFileForm()
     {
-        if(session_status()!=2)
-        session_start();
+        if (session_status() != 2)
+            session_start();
         if (!empty($_SESSION['name_user'])) {
 
             $this->view->showFileForm("");
